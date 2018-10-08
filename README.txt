@@ -1,0 +1,1 @@
+Honors Thesis to detect propganda bots on Twitter using machine learning.
