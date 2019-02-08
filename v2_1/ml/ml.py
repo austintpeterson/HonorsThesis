@@ -53,8 +53,8 @@ def main():
 	#assigns user classifications to user tweets
 	data_list = processing.load_data(target_user_list+".csv", target_tweet_dir)
 
-	#
-	data_list = processing.preprocess_data(data_list)
+	#implement later
+	#data_list = processing.preprocess_data(data_list)
 
 	#todo: implement test_train_split?
 

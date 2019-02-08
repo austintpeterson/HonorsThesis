@@ -19,8 +19,14 @@ from sklearn.model_selection import GridSearchCV
 def load_data(target_user_list, target_tweet_dir):
 	path = os.path.dirname(os.path.abspath(__file__))
 
+	#pathways
+	my_path = os.path.dirname(os.path.abspath(__file__))
+	parent_path = os.path.abspath(os.path.join(my_path, os.pardir))
+
+
+
 	#open user list
-	with open(target_user_list, "r") as user_list_file:
+	with open(parent_path+"/user_collections/"+target_user_list, "r") as user_list_file:
 		reader = csv.reader(user_list_file, delimiter = ',')
 		next(reader, None)#skip header
 
@@ -35,7 +41,7 @@ def load_data(target_user_list, target_tweet_dir):
 
 			try:
 				#get tweets for the user
-				with open(path+"/"+target_tweet_dir+"/"+screen_name+".csv") as tweet_file:
+				with open(parent_path+"/tweets_collections/"+target_tweet_dir+"/"+screen_name+".csv") as tweet_file:
 					tweet_reader = csv.reader(tweet_file, delimiter = ',')
 					next(tweet_reader, None)#skip header
 
