@@ -102,6 +102,7 @@ def main():
 
 	train_amt = int(train_seg*float(data_list_size))#int cast will floor float
 	print("amt of tweets to be used in training: "+str(train_amt))
+	print("")
 
 	#split data
 	train_data = data_list[:train_amt]
