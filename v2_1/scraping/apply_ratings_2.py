@@ -8,6 +8,8 @@ import tweepy
 import csv
 
 import time
+import sys
+from sys import argv
 
 #getting api keys
 import os
@@ -24,9 +26,6 @@ consumer_key = os.getenv('CONSUMER_KEY')
 consumer_secret = os.getenv('CONSUMER_SECRET')
 access_key = os.getenv('ACCESS_KEY')
 access_secret = os.getenv('ACCESS_SECRET')
-
-
-
 
 mashape_key = "8HK07BkyjOmshRCv6uHzqpJm73eSp1TUxNVjsnKYKn25VJG2rL"#get API on mashape
 #note: don't need to add BotOMeter to Applc.  just need general production mashape key
@@ -50,21 +49,42 @@ class bcolors:
 
 
 
+def get_last_rated(rated_file):
+	with open(rated_file, "r") as file:
+		reader = csv.reader(file, delimiter = ',')
+		next(reader, None)#skip header
+
+		screen_name = None
+		#do this more efficiently some day
+		for row in reader:
+			screen_name = row[1]
+
+		if screen_name == None:
+			#get more elegant solution for this
+			#todo: either add header or delete file and open differently
+			print("_r file is empty, kill it and retry\nexiting...")
+			sys.exit(0)
+
+		print("last rated user: "+screen_name)
+		return screen_name
+
 
 
 def main():
 	#user input
-	file_str = input("enter csv file: ")
-	file_str2 = file_str+".csv"
+	#file_str = input("enter csv file: ")
+	#file_str2 = file_str+".csv"
 
-	leftOff = int(input("enter last @username index if left off (0 for new run): "))
+	#using system arguments for now (nohup!)
+	file_str = argv[1]
+	file_str_ext = file_str+".csv"
+
+
 
 	#botometer
 	bom = botometer.Botometer(wait_on_ratelimit=True,
 		mashape_key=mashape_key,
 		**twitter_app_auth)
-
-
 
 	#pathways
 	my_path = os.path.dirname(os.path.abspath(__file__))
@@ -72,33 +92,36 @@ def main():
 
 
 
-	with open(parent_path+"/user_collections/"+file_str2, "r") as file:
+	with open(parent_path+"/user_collections/"+file_str_ext, "r") as file:
 		reader = csv.reader(file, delimiter = ',')
 		next(reader, None)#skip header
 
-
-
-
 		#
-		file = None
+		r_file = None
 		writer = None
+		#screen name of last rated use in _r file
+		last_rated = ""
 
+		rated_file = parent_path+"/user_collections/"+file_str+"_r.csv"
 
-
+		#check if _r file exists, find last user rated
+		rated_file_exists = os.path.exists(rated_file)
 		
-		#if leftOff used, open file with append
-		if leftOff != 0:
-			file = open(parent_path+"/user_collections/"+file_str+"_r.csv", "a")
-			writer = csv.writer(file, delimiter = ',')
+		if rated_file_exists:
+			print("_r file exists")
+			#get last user rated
+			last_rated = get_last_rated(rated_file)
+
+			#open file with append
+			r_file = open(rated_file, "a")
+			writer = csv.writer(r_file, delimiter = ',')
+
 		else:
-			#new file i/o
-			file = open(parent_path+"/user_collections/"+file_str+"_r.csv", "w")
-			writer = csv.writer(file, delimiter = ',')
+			#new file
+			r_file = open(rated_file, "w")
+			writer = csv.writer(r_file, delimiter = ',')
 			#new header
 			writer.writerow(['id', 'screen_name', 'name', 'date_created', 'botornot_rt', 'bot'])
-
-
-
 
 		i = 0
 
@@ -107,23 +130,18 @@ def main():
 
 		for row in reader:
 			
-			#fix this horrible quick fix
-			#if leftOff implemented, skip up until the provided @username index
-			if (leftOff != 0) and catchingUp:
-				if (i != leftOff) or (i < leftOff):
-					i += 1
-					continue
-				else:
-					#time.sleep(5)
-					catchingUp = False
-			###
-
-
-
-
 			screen_name = row[1]
 
-			#eng_score = 0.0
+			#todo: make sure this works - start appending correctly
+			if rated_file_exists and catchingUp:
+				if (screen_name != last_rated):
+					print("continuing past: "+screen_name)
+					continue
+				else:
+					catchingUp = False
+					continue
+
+			#todo: add file flush to ensure new rows get saved
 			try:
 				print(str(i)+": now sending @"+screen_name+" BotOMeter request...")
 				result = bom.check_account("@"+screen_name)
@@ -134,6 +152,8 @@ def main():
 				writer.writerow([str(row[0]), row[1], row[2], row[3], str(eng_score)])
 				print(bcolors.OKGREEN+"SUCCESS"+bcolors.ENDC)
 
+				r_file.flush()
+
 
 
 			#no tweets or content.  skip
@@ -142,7 +162,6 @@ def main():
 
 			except tweepy.error.TweepError as e:
 				print(bcolors.WARNING+"tweep err: "+str(e)+bcolors.ENDC)
-
 
 
 			print("")
