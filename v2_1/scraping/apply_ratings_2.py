@@ -27,7 +27,7 @@ consumer_secret = os.getenv('CONSUMER_SECRET')
 access_key = os.getenv('ACCESS_KEY')
 access_secret = os.getenv('ACCESS_SECRET')
 
-mashape_key = "8HK07BkyjOmshRCv6uHzqpJm73eSp1TUxNVjsnKYKn25VJG2rL"#get API on mashape
+mashape_key = os.getenv('MASHAPE_KEY')#get API on mashape
 #note: don't need to add BotOMeter to Applc.  just need general production mashape key
 
 twitter_app_auth = {
