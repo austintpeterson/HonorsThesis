@@ -12,6 +12,8 @@ import os.path
 from os.path import join, dirname
 from dotenv import load_dotenv
 
+from sys import argv
+
 dotenv_path = join(dirname(__file__), 'keys.env')
 load_dotenv(dotenv_path)
  
@@ -30,27 +32,28 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-
 #check tweets dir exists, create if not
-#todo: THIS IS BROKEN
+#todo: THIS IS BROKEN, FIX
+#update: probably not broken
 def assure_path_exists(path):
 		my_dir = os.path.dirname(path)
 		
-
-
 		if not os.path.exists(my_dir):
-			print("PATH DNE")
+			print("directory DNE")
 			#build directory
 			os.makedirs(my_dir)
+		else:
+			print("directory exists")
 
 
 
 def main():
-	file_str = input("choose flagged csv to collect for: ")
-	file_str2 = file_str+".csv"
-	amt = int(input("how many tweets per user?: "))
+	file_str = argv[1]#input("choose flagged csv to collect for: ")
+	file_str_ext = file_str+".csv"
+	amt = int(argv[2])#input("how many tweets per user?: "))
 	#user used to be able select target
-	#target_folder = input("target folder: ")
+	#defaults to user_collection csv file name if none given
+	target_folder = argv[3]#input("target folder (enter if default): ")
 
 
 
@@ -67,18 +70,19 @@ def main():
 
 
 
-	#make sure target_folder exists, if not, create
-	#note: instead of user defined, now tweet dir name matches user csv name
-	target_folder = file_str.split("_")[0]#simple name
-	print("target folder: "+target_folder)
-	print("parent: "+parent_path)
+	#set target folder to default if needed
+	if target_folder == "":
+		target_folder = file_str.split("_")[0]#simple name
+		#print("target folder: "+target_folder)
+		#print("parent: "+parent_path)
+
 	assure_path_exists(parent_path+"/tweets_collections/"+target_folder+"/")
 
 
 
 	#open user csv
 	#todo: with makes sure file closes.  Implement on all scripts
-	with open(parent_path+"/user_collections/"+file_str2, "r") as file:
+	with open(parent_path+"/user_collections/"+file_str_ext, "r") as file:
 		reader = csv.reader(file, delimiter = ',')
 		next(reader, None)#skip header
 
@@ -116,10 +120,6 @@ def main():
 				user_input = input("continue? ")
 			
 
-			#deal w users that have since been suspended/no tweets (tweepy err!!)
-			#check if user_tweets is empty/null, and don't generate the file if so
-			
-			#TODO: deal with the fact that ml will look for a user tweets data file that is not there
 
 			if not user_tweets:
 				print(bcolors.WARNING+"no tweets data file built for @"+screen_name+bcolors.ENDC)
