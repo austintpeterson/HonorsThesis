@@ -13,6 +13,7 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 
 from sys import argv
+import log
 
 dotenv_path = join(dirname(__file__), 'keys.env')
 load_dotenv(dotenv_path)
@@ -53,7 +54,7 @@ def main():
 	amt = int(argv[2])#input("how many tweets per user?: "))
 	#user used to be able select target
 	#defaults to user_collection csv file name if none given
-	target_folder = argv[3]#input("target folder (enter if default): ")
+	target_folder = ""#argv[3]#input("target folder (enter if default): ")
 
 
 
@@ -139,6 +140,9 @@ def main():
 					#print("")
 					writer.writerow([tweet.id, tweet.full_text])
 					ti += 1
+
+				#write to log file
+				log.write(str(i)+": created "+screen_name+".csv")
 
 
 

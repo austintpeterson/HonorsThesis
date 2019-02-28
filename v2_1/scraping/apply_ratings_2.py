@@ -17,6 +17,8 @@ import os.path
 from os.path import join, dirname
 from dotenv import load_dotenv
 
+import log
+
 
 
 dotenv_path = join(dirname(__file__), 'keys.env')
@@ -101,6 +103,7 @@ def main():
 		writer = None
 		#screen name of last rated use in _r file
 		last_rated = ""
+		open_type = ""
 
 		rated_file = parent_path+"/user_collections/"+file_str+"_r.csv"
 
@@ -113,14 +116,15 @@ def main():
 			last_rated = get_last_rated(rated_file)
 
 			#open file with append
-			r_file = open(rated_file, "a")
-			writer = csv.writer(r_file, delimiter = ',')
+			open_type = "a"
 
 		else:
-			#new file
-			r_file = open(rated_file, "w")
-			writer = csv.writer(r_file, delimiter = ',')
-			#new header
+			open_type = "w"
+
+		r_file = open(rated_file, open_type)
+		writer = csv.writer(r_file, delimiter = ',')
+		if open_type == "w":
+			#new header if necessary
 			writer.writerow(['id', 'screen_name', 'name', 'date_created', 'botornot_rt', 'bot'])
 
 		i = 0
@@ -154,6 +158,9 @@ def main():
 				print(bcolors.OKGREEN+"SUCCESS"+bcolors.ENDC)
 
 				r_file.flush()
+
+				#write to shared log file
+				log.write(file_str+"_r.csv: "+str(i)+": writing @"+screen_name+" to new .csv")
 
 
 

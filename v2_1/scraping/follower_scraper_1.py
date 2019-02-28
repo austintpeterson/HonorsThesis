@@ -13,6 +13,7 @@ import os
 import os.path
 from os.path import join, dirname
 from dotenv import load_dotenv
+import log
 
 #load env variables
 dotenv_path = join(dirname(__file__), 'keys.env')
@@ -85,6 +86,8 @@ def main():
            
         #process user here
         print(str(i)+": "+user.screen_name)
+        log.write(file_str+": "+str(i)+": "+user.screen_name)
+        
         date_created = datetime.datetime.now()
         writer.writerow([str(user.id), user.screen_name, user.name, str(date_created)])
         
