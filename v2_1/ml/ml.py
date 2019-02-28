@@ -1,4 +1,5 @@
 #beginnings of some ml
+#currently using old load_data()
 
 import csv
 import os.path
@@ -8,7 +9,8 @@ import nltk
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import stopwords
 
-from sklearn.model_selection import train_test_split 
+#why did this break?
+#from sklearn.model_selection import train_test_split 
 
 #ml
 import pandas as pd
@@ -30,11 +32,19 @@ import numpy as np
 #from sklearn.cross_validation import KFold
 from sklearn.metrics import confusion_matrix, f1_score
 
-#my stuff
 import importlib
+
+#w2v gensim
+from gensim.models import Word2Vec
+
+
+#adding libraries
+my_path = os.path.dirname(os.path.abspath(__file__))
+parent_path = os.path.abspath(os.path.join(my_path, os.pardir))
+
+import sys
+sys.path.insert(0, parent_path+"/processing")
 import processing
-
-
 
 
 
@@ -52,6 +62,8 @@ def main():
 	#INTERMEDIATE REPRESENTATION & PROCESSING
 	#assigns user classifications to user tweets
 	data_list = processing.load_data(target_user_list+".csv", target_tweet_dir)
+
+	#todo: implement loading/processing df for _sqz here
 
 	#implement later
 	#data_list = processing.preprocess_data(data_list)
@@ -76,27 +88,32 @@ def main():
 	#note: tfidf - term freq and inverse doc freq
 	#no pipeline in ml_old, traditional fit/predict arch.
 	#first V2 choice
-	# text_clf = Pipeline([
-	# 	('vect', CountVectorizer()),#can add stop_words='english' to params
-	# 	('tfidf', TfidfTransformer()),#figure this out better
-	# 	('clf', MultinomialNB()),
-	# 	])
-
 	text_clf = Pipeline([
-		('features', FeatureUnion([
-			('text', Pipeline([
-				('vect', CountVectorizer(min_df=1,max_df=2)),#new params
-				('tfidf', TfidfTransformer()),
-			])),
-			('length', Pipeline([
-				('count', FunctionTransformer(get_text_length, validate = False)),
-			]))
-		])),
-		('clf', MultinomialNB())
+		('vect', CountVectorizer()),#can add stop_words='english' to params
+		('tfidf', TfidfTransformer()),#figure this out better
+		('clf', MultinomialNB()),
 	])
 
+	#todo: this doesn't work w/ str(), fix this later
+	# text_clf = Pipeline([
+	# 	('word2vec', Word2Vec()),#can add stop_words='english' to params
+	# 	('tfidf', TfidfTransformer()),#figure this out better
+	# 	('clf', MultinomialNB()),
+	# ])
 
-
+	#not all that more accurate
+	# text_clf = Pipeline([
+	# 	('features', FeatureUnion([
+	# 		('text', Pipeline([
+	# 			('vect', CountVectorizer(min_df=1,max_df=2)),#new params
+	# 			('tfidf', TfidfTransformer()),
+	# 		])),
+	# 		('length', Pipeline([
+	# 			('count', FunctionTransformer(get_text_length, validate = False)),
+	# 		]))
+	# 	])),
+	# 	('clf', MultinomialNB())
+	# ])
 
 	#3
 	#use vect/classifier multiplexer system here to find best combo
@@ -114,33 +131,6 @@ def main():
 
 	#new grid search
 	#processing.perform_gs(train_data, text_clf)
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
 
 
 
