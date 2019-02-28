@@ -138,6 +138,7 @@ def main():
 					print("continuing past: "+screen_name)
 					continue
 				else:
+					print("continuing past: "+screen_name)
 					catchingUp = False
 					continue
 
