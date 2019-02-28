@@ -11,13 +11,13 @@ import os.path
 from os.path import join, dirname
 from dotenv import load_dotenv
 
+from sys import argv
+
 def main():
 	file_str = input("enter file to apply flags to (_r incl.): ")
 	file_str_ext = file_str+".csv"
-	# thresh = float(input("enter a confidence threshold for classification: "))
-	#thresh
-
-
+	#thresh = float(arg[2])#get c
+	#float(input("enter a confidence threshold for classification: "))
 
 	#pathways
 	my_path = os.path.dirname(os.path.abspath(__file__))
@@ -42,15 +42,6 @@ def main():
 			#determine flag based on thresh
 			print(str(i)+": classifying @"+row[1]+"...")
 			bot_rt = float(row[4])
-
-			#botornot_rt exceeds user def. threshold,
-			#classified as a bot (1)
-			"""
-			if bot_rt >= thresh:
-				writer.writerow([str(row[0]), row[1], row[2], row[3], row[4], "1"])
-			else:
-				writer.writerow([str(row[0]), row[1], row[2], row[3], row[4], "0"])
-			"""
 
 			if bot_rt >= .80:
 				#upper training (bots)

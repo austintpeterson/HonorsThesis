@@ -1,7 +1,7 @@
 #3
 #(applies classifications)
-#import botometer
-#import tweepy
+#no nohup, happens quick enough
+
 import csv
 
 import os
@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 def main():
 	file_str = input("enter file to apply flags to (_r incl.): ")
-	file_str2 = file_str+".csv"
+	file_str_ext = file_str+".csv"
 	thresh = float(input("enter a confidence threshold for classification: "))
 
 
@@ -22,7 +22,7 @@ def main():
 
 
 
-	with open(parent_path+"/user_collections/"+file_str2, "r") as file:
+	with open(parent_path+"/user_collections/"+file_str_ext, "r") as file:
 		reader = csv.reader(file, delimiter = ',')
 		next(reader, None)#skip header
 
@@ -33,7 +33,7 @@ def main():
 
 		i = 0
 		for row in reader:
-			#process here
+
 			#determine flag based on thresh
 			print(str(i)+": classifying @"+row[1]+"...")
 			bot_rt = float(row[4])

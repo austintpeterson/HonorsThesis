@@ -1,12 +1,12 @@
 #1
-#This will be a script used to gather info from twitter and store into
-#some form of database for later use with ml algorthims.
-#going to use TwitterScraper library and tweepy(official Twitter API)
+#This will be a script used to gather followers from twitter (currently set to @realDonaldTrump)
+#using the TwitterAPI
 
 import tweepy
 import time
 import datetime
 import csv
+from sys import argv
 
 #getting api keys
 import os
@@ -26,10 +26,10 @@ access_secret = os.getenv('ACCESS_SECRET')
 
 
 def main():
-    #user input
-    amt_str = input("enter amt: ")
+    #changed to sys for nohup
+    amt_str = argv[1]#get amt of followers to collect
     amt = int(amt_str)
-    file_str = input("enter csv file: ")
+    file_str = argv[2]#get file name to write/append to
     file_str = file_str+".csv"
 
 
